@@ -16,3 +16,8 @@ class NotificationEmergency(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class APIUser(models.Model):
+    deviceId = models.CharField(max_length=255)
+    carPlate = models.CharField(max_length=7)
