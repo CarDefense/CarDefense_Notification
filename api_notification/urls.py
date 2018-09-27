@@ -23,8 +23,8 @@ from notifications.views import send_push_message, send_emergency_push_message
 
 router = routers.SimpleRouter()
 router.register(r'notifications', NotificationViewSet)
-router.register(r'notificationsemercency', NotificationEmergencyViewSet)
-router.register(r'APIUsers', APIUserViewSet)
+router.register(r'notificationsemergency', NotificationEmergencyViewSet)
+router.register(r'apiusers', APIUserViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
