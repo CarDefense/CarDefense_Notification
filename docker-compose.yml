@@ -12,3 +12,14 @@ services:
       - "8002:8000"
     depends_on:
       - db
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "443:8000"
+      - "80:80"
+    volumes:
+      - ./docs:/code/docs
+      - ./nginx/conf.d
+    depends_on:
+      - web
