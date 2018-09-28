@@ -17,14 +17,13 @@ from django.contrib import admin
 from django.conf.urls import include, url
 from django.urls import path
 from rest_framework import routers
-from notifications.views import NotificationViewSet, NotificationEmergencyViewSet, APIUserViewSet
+from notifications.views import NotificationViewSet, NotificationEmergencyViewSet
 from notifications.views import send_push_message, send_emergency_push_message
 
 
 router = routers.SimpleRouter()
 router.register(r'notifications', NotificationViewSet)
 router.register(r'notificationsemergency', NotificationEmergencyViewSet)
-router.register(r'apiusers', APIUserViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

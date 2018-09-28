@@ -10,14 +10,7 @@ class Notification(models.Model):
         return self.title
 
 
-class NotificationEmergency(models.Model):
-    title = models.CharField(max_length=150)
-    message = models.CharField(max_length=150)
-
-    def __str__(self):
-        return self.title
-
-
-class APIUser(models.Model):
-    deviceId = models.CharField(max_length=255)
-    carPlate = models.CharField(max_length=7)
+class EmergencyNotifications(models.Model):
+    sender_id = models.IntegerField()
+    title = models.CharField(max_length=10)
+    message = models.CharField(max_length=50)
