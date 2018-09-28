@@ -20,6 +20,6 @@ services:
       - "80:80"
     volumes:
       - ./docs:/code/docs
-      - ./nginx/conf.d
+      - ./config:/etc/nginx.conf
     depends_on:
       - web
