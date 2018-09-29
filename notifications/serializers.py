@@ -1,10 +1,10 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Notification, EmergencyNotifications
+from .models import Notifications, EmergencyNotifications
 
 
-class NotificationSerializer(ModelSerializer):
+class NotificationsSerializer(ModelSerializer):
     class Meta:
-        model = Notification
+        model = Notifications
         fields = '__all__'
 
 
