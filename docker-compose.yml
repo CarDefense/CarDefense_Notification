@@ -1,8 +1,10 @@
 version: '3'
 
 services:
-  db:
+  notificationdb:
     image: postgres
+    ports:
+      - "5434:80"
   web:
     build: .
     command: python3 manage.py runserver 0.0.0.0:8000
@@ -11,15 +13,4 @@ services:
     ports:
       - "8002:8000"
     depends_on:
-      - db
-  nginx:
-    image: nginx:latest
-    container_name: nginx
-    ports:
-      - "443:8000"
-      - "80:80"
-    volumes:
-      - ./docs:/code/docs
-      - ./config:/etc/nginx.conf
-    depends_on:
-      - web
+      - notificationdb
