@@ -81,7 +81,7 @@ def send_emergency_push_message(request):
     message = request.data["message"]
 
     messagesArray = []
-    tokensArray = requests.get('http://68.183.28.199:8005//notification_token/')
+    tokensArray = requests.get('http://68.183.28.199:8005/notification_token/')
 
     for token in tokensArray.json():
         messagesArray.append(PushMessage(to=token, title=title,
