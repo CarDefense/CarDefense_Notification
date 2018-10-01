@@ -39,7 +39,7 @@ def send_push_message(request):
     plate = request.data['plate']
 
     task = {"plate": plate}
-    token_data = requests.post('http://192.168.1.5:8001/get_notification_token/', json=task)
+    token_data = requests.post('http://68.183.28.199:8005/get_notification_token/', json=task)
     token = token_data.json()
 
     title = request.data['title']
@@ -68,7 +68,7 @@ def send_push_message(request):
         raise self.retry(exc=exc)
 
     task = {"token": token, "title": title, "message": message}
-    resp = requests.post('http://192.168.1.5:8002/notifications/', json=task)
+    resp = requests.post('http://68.183.28.199:8002/notifications/', json=task)
     return Response(resp)
 
 
@@ -81,7 +81,7 @@ def send_emergency_push_message(request):
     message = request.data["message"]
 
     messagesArray = []
-    tokensArray = requests.get('http://192.168.1.5:8001/notification_token/')
+    tokensArray = requests.get('http://68.183.28.199:8005//notification_token/')
 
     for token in tokensArray.json():
         messagesArray.append(PushMessage(to=token, title=title,
@@ -90,7 +90,7 @@ def send_emergency_push_message(request):
     PushClient().publish_multiple(messagesArray)
 
     task = {"title": title, "message": message}
-    resp = requests.post('http://192.168.1.5:8002/emergencynotifications/', json=task)
+    resp = requests.post('http://68.183.28.199:8002/emergencynotifications/', json=task)
 
     # if resp.status_code != 201:
     #    raise ApiError('POST /tasks/ {}'.format(resp.status_code))
