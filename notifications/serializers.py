@@ -1,20 +1,14 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Notification, NotificationEmergency, APIUser
+from .models import Notifications, EmergencyNotifications
 
 
-class NotificationSerializer(ModelSerializer):
+class NotificationsSerializer(ModelSerializer):
     class Meta:
-        model = Notification
+        model = Notifications
         fields = '__all__'
 
 
-class NotificationEmergencySerializer(ModelSerializer):
+class EmergencyNotificationsSerializer(ModelSerializer):
     class Meta:
-        model = NotificationEmergency
-        fields = '__all__'
-
-
-class APIUserSerializer(ModelSerializer):
-    class Meta:
-        model = APIUser
+        model = EmergencyNotifications
         fields = '__all__'

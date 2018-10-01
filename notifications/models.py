@@ -1,23 +1,12 @@
 from django.db import models
 
 
-class Notification(models.Model):
+class Notifications(models.Model):
     token = models.CharField(max_length=50)
     title = models.CharField(max_length=20)
     message = models.CharField(max_length=50)
 
-    def __str__(self):
-        return self.title
 
-
-class NotificationEmergency(models.Model):
-    title = models.CharField(max_length=150)
-    message = models.CharField(max_length=150)
-
-    def __str__(self):
-        return self.title
-
-
-class APIUser(models.Model):
-    deviceId = models.CharField(max_length=255)
-    carPlate = models.CharField(max_length=7)
+class EmergencyNotifications(models.Model):
+    title = models.CharField(max_length=10)
+    message = models.CharField(max_length=50)
