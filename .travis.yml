@@ -13,5 +13,9 @@ before_install:
 
 script:
   - docker-compose up -d
+  - docker-compose run web ./manage.py makemigrations
+  - docker-compose run web ./manage.py migrate
+  - docker-compose run web coverage run ./manage.py test
+  - docker-compose run web coverage report
   - flake8 .
 
