@@ -23,3 +23,11 @@ class NotificationsTests(APITestCase):
     def testing_get(client):
         client = APIClient()
         client.get('http://68.183.28.199:8002/emergencynotifications/')
+
+    def testing_private(client):
+        client = APIClient()
+        client.post({'plate': 'new plate', 'token': 'new token', 'title': 'new title', 'message': 'new message'}, format='json')
+
+    def testing_public(client):
+        client = APIClient()
+        client.post('/send_emergency_push_message/', {'title': 'new title', 'message': 'new message'}, format='json')
