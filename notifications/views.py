@@ -1,8 +1,10 @@
-from exponent_server_sdk import DeviceNotRegisteredError
 from exponent_server_sdk import PushClient
 from exponent_server_sdk import PushMessage
 from exponent_server_sdk import PushServerError
 from exponent_server_sdk import PushResponseError
+from exponent_server_sdk import DeviceNotRegisteredError
+from exponent_server_sdk import MessageTooBigError
+from exponent_server_sdk import MessageRateExceededError
 from requests.exceptions import ConnectionError
 from requests.exceptions import HTTPError
 from rest_framework.viewsets import ModelViewSet
@@ -12,9 +14,7 @@ from rest_framework.decorators import api_view
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-# from rest_framework import status
-from self import self
-import rollbar
+from rest_framework import status
 import requests
 
 
@@ -36,78 +36,85 @@ class EmergencyNotificationsViewSet(ModelViewSet):
 @permission_classes((AllowAny, ))
 def send_push_message(request):
 
-    plate = request.data['plate']
-
-    task = {"plate": plate}
-    token_data = requests.post('http://68.183.28.199:8005/get_notification_token/', json=task)
-    token = token_data.json()
-
+    # plate = request.data['plate']
     title = request.data['title']
     message = request.data['message']
+
+    # try:
+    #     task = {"plate": plate}
+    #     token_data = requests.post('http://68.183.28.199:8005/get_notification_token/', json=task)
+    #     token = token_data.json()
+    # except:
+    #     return Response("Could not to connect to cars", status.HTTP_503_SERVICE_UNAVAILABLE)
+    token = "ExponentPushToken[QI3DqhCU-Y2-bBC5M-uxZN]"
 
     try:
         response = PushClient().publish(
             PushMessage(to=token, title=title, body=message))
-    except PushServerError as exc:
-        rollbar.report_exc_info(
-            extra_data={'token': token, 'title': title, 'message': message})
-        raise
-    except (ConnectionError, HTTPError) as exc:
-        rollbar.report_exc_info(
-            extra_data={'token': token, 'title': title, 'message': message})
-        raise self.retry(exc=exc)
+    except PushServerError:
+        return Response("Push Server Error", status.HTTP_502_BAD_GATEWAY)
+    except (ConnectionError, HTTPError):
+        return Response("Could not connect to ExpoSever", status.HTTP_502_BAD_GATEWAY)
+    except (ValueError):
+        return Response("Recipient not registered", status.HTTP_404_NOT_FOUND)
     try:
         response.validate_response()
     except DeviceNotRegisteredError:
-        from notifications.models import PushToken
-        PushToken.objects.filter(token=token).update(active=False)
-    except PushResponseError as exc:
-        rollbar.report_exc_info(
-            extra_data={'token': token, 'title': title, 'message': message,
-                        'push_response': exc.push_response._asdict(), })
-        raise self.retry(exc=exc)
+        return Response("Recipient not registered", status.HTTP_404_NOT_FOUND)
+    except MessageTooBigError:
+        return Response("Message too big", status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
+    except MessageRateExceededError:
+        return Response("Error", status.HTTP_503_SERVICE_UNAVAILABLE)
+    except PushResponseError:
+        return Response("Recipient not registered", status.HTTP_404_NOT_FOUND)
 
     task = {"token": token, "title": title, "message": message}
-    resp = requests.post('http://68.183.28.199:8002/notifications/', json=task)
-    return Response(resp)
+    requests.post('http://192.168.1.3:8002/notifications/', json=task)
+    return Response(status.HTTP_200_OK)
 
 
 @api_view(["POST"])
 @permission_classes((AllowAny, ))
 def send_emergency_push_message(request):
 
-    # sender_id = request.data["sender_id"]
+    sender_id = request.data["sender_id"]
     title = request.data["title"]
     message = request.data["message"]
 
     messagesArray = []
-    tokensArray = requests.get('http://68.183.28.199:8005/notification_token/')
+
+    try:
+        tokensArray = requests.get('http://192.168.1.3:8005/notification_token/')
+    except (ConnectionError, HTTPError):
+        return Response("Could not connect to profile", status.HTTP_502_BAD_GATEWAY)
 
     for token in tokensArray.json():
-        messagesArray.append(PushMessage(to=token, title=title,
-                                         body=message))
+        if(token != sender_id and 'ExponentPushToken' in token):
+            messagesArray.append(PushMessage(to=token, title=title,
+                                             body=message))
 
-    PushClient().publish_multiple(messagesArray)
+    try:
+        responseArray = PushClient().publish_multiple(messagesArray)
+    except (ConnectionError, HTTPError):
+        return Response("Could not connect to ExpoSever", status.HTTP_502_BAD_GATEWAY)
+    except (PushServerError):
+        return Response("Push Server Error", status.HTTP_502_BAD_GATEWAY)
+
+    i = 0
+    for response in responseArray:
+        try:
+            response.validate_response()
+        except DeviceNotRegisteredError:
+            pass
+        except MessageTooBigError:
+            return Response("Message too big", status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
+        except MessageRateExceededError:
+            i = i + 1
+
+    j = len(responseArray)
+    if i > (j/2):
+        return Response("Error", status.HTTP_503_SERVICE_UNAVAILABLE)
 
     task = {"title": title, "message": message}
-    resp = requests.post('http://68.183.28.199:8002/emergencynotifications/', json=task)
-
-    # if resp.status_code != 201:
-    #    raise ApiError('POST /tasks/ {}'.format(resp.status_code))
-    #    print('Created task. ID: {}'.format(resp.json()["id"]))
-
-    return Response(resp)
-
-    #    elif request.method == 'POST':
-    #    serializer = SnippetSerializer(data=request.data)
-    #    if serializer.is_valid():
-    #        serializer.save()
-    #        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #  return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # adicionar exceção de PushServerError
-    # adicionar exceção de ConnectionError
-    # adicionar exceção de HTTPError
-    # adicionar exceção de DeviceNotRegisteredError
-    # adicionar exceção de PushResponseError
-    # adicionar retorno status.HTTP_200_OK
+    requests.post('http://192.168.1.3:8002/emergencynotifications/', json=task)
+    return Response(status.HTTP_200_OK)
