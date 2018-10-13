@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.conf.urls import include, url
 from django.urls import path
 from rest_framework import routers
+from django.conf import settings
+from django.conf.urls.static import static
 from notifications.views import NotificationsViewSet, EmergencyNotificationsViewSet
 from notifications.views import send_push_message, send_emergency_push_message
 
@@ -30,4 +32,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^send_push_message/$', send_push_message),
     url(r'^send_emergency_push_message/$', send_emergency_push_message)
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
