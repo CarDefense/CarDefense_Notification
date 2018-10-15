@@ -8,14 +8,19 @@ from exponent_server_sdk import MessageRateExceededError
 from requests.exceptions import ConnectionError
 from requests.exceptions import HTTPError
 from rest_framework.viewsets import ModelViewSet
-from notifications.models import Notifications, EmergencyNotifications
-from .serializers import NotificationsSerializer, EmergencyNotificationsSerializer
+from notifications.models import Notifications, EmergencyNotifications, NotificationsImage
+from .serializers import NotificationsSerializer, EmergencyNotificationsSerializer, NotificationsImageSerializer
 from rest_framework.decorators import api_view
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 import requests
+
+
+class NotificationsImageViewSet(ModelViewSet):
+    queryset = NotificationsImage.objects.all()
+    serializer_class = NotificationsImageSerializer
 
 
 class NotificationsViewSet(ModelViewSet):
@@ -69,7 +74,7 @@ def send_push_message(request):
         return Response("Recipient not registered", status.HTTP_404_NOT_FOUND)
 
     task = {"token": token, "title": title, "message": message}
-    requests.post('http://192.168.1.3:8002/notifications/', json=task)
+    requests.post('http://192.168.1.4:8002/notifications/', json=task)
     return Response(status.HTTP_200_OK)
 
 
@@ -80,11 +85,12 @@ def send_emergency_push_message(request):
     sender_id = request.data["sender_id"]
     title = request.data["title"]
     message = request.data["message"]
+    image = request.data["image"]
 
     messagesArray = []
 
     try:
-        tokensArray = requests.get('http://192.168.1.3:8005/notification_token/')
+        tokensArray = requests.get('http://192.168.1.4:8005/notification_token/')
     except (ConnectionError, HTTPError):
         return Response("Could not connect to profile", status.HTTP_502_BAD_GATEWAY)
 
@@ -115,6 +121,6 @@ def send_emergency_push_message(request):
     if i > (j/2):
         return Response("Error", status.HTTP_503_SERVICE_UNAVAILABLE)
 
-    task = {"title": title, "message": message}
-    requests.post('http://192.168.1.3:8002/emergencynotifications/', json=task)
+    task = {"title": title, "message": message, "image": image}
+    requests.post('http://192.168.1.4:8002/emergencynotifications/', json=task)
     return Response(status.HTTP_200_OK)
