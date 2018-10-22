@@ -6,5 +6,6 @@ coverage
 coveralls
 exponent_server_sdk
 rollbar
+Pillow
 self
 requests

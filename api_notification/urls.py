@@ -17,17 +17,19 @@ from django.contrib import admin
 from django.conf.urls import include, url
 from django.urls import path
 from rest_framework import routers
-from notifications.views import NotificationsViewSet, EmergencyNotificationsViewSet
+from notifications.views import NotificationsViewSet, EmergencyNotificationsViewSet, NotificationsImageViewSet
 from notifications.views import send_push_message, send_emergency_push_message
-
+from django.conf.urls.static import static
+from django.conf import settings
 
 router = routers.SimpleRouter()
 router.register(r'notifications', NotificationsViewSet)
 router.register(r'emergencynotifications', EmergencyNotificationsViewSet)
+router.register(r'notificationsimage', NotificationsImageViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
     url(r'^send_push_message/$', send_push_message),
     url(r'^send_emergency_push_message/$', send_emergency_push_message)
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
