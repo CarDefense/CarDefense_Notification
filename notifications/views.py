@@ -27,9 +27,9 @@ class NotificationsViewSet(ModelViewSet):
     queryset = Notifications.objects.all()
     serializer_class = NotificationsSerializer
 
-    def get_queryset(self):
-        token = self.request.query_params.get("token")
-        return Notifications.objects.filter(token=token)
+    # def get_queryset(self):
+    #     token = self.request.query_params.get("token")
+    #     return Notifications.objects.filter(token=token)
 
 
 class EmergencyNotificationsViewSet(ModelViewSet):
@@ -49,14 +49,15 @@ def send_push_message(request):
 
     try:
         task = {"plate": plate}
-        token_data = requests.post('http://68.183.28.199:8003/get_id_token/', json=task)
+        token_data = requests.post('http://cardefense.eastus.cloudapp.azure.com:8003/get_id_token/', json=task)
         token = token_data.json()
     except (ConnectionError, HTTPError):
         return Response("Could not to connect to cars", status.HTTP_503_SERVICE_UNAVAILABLE)
 
     try:
         task = {"token": token}
-        token_data = requests.post('http://68.183.28.199:8005/get_notification_token/', json=task)
+        token_data = requests.post('http://cardefense.eastus.cloudapp.azure.com:8005/get_notification_token/',
+                                   json=task)
         token = token_data.json()
     except (ConnectionError, HTTPError):
         return Response("Could not to connect to profile", status.HTTP_503_SERVICE_UNAVAILABLE)
@@ -69,7 +70,7 @@ def send_push_message(request):
     except (ConnectionError, HTTPError):
         return Response("Could not connect to ExpoSever", status.HTTP_502_BAD_GATEWAY)
     except (ValueError):
-        return Response("Recipient not registered", status.HTTP_404_NOT_FOUND)
+        return Response("Recipient not registered - Value Error", status.HTTP_404_NOT_FOUND)
     try:
         response.validate_response()
     except DeviceNotRegisteredError:
@@ -82,7 +83,7 @@ def send_push_message(request):
         return Response("Recipient not registered", status.HTTP_404_NOT_FOUND)
 
     task = {"token": token, "title": title, "message": message, "image": image}
-    requests.post('http://192.168.1.4:8002/notifications/', json=task)
+    requests.post('http://cardefense.eastus.cloudapp.azure.com:8002/notifications/', json=task)
     return Response(status.HTTP_200_OK)
 
 
@@ -98,7 +99,7 @@ def send_emergency_push_message(request):
     messagesArray = []
 
     try:
-        tokensArray = requests.get('http://192.168.1.4:8005/notification_token/')
+        tokensArray = requests.get('http://cardefense.eastus.cloudapp.azure.com:8005/notification_token/')
     except (ConnectionError, HTTPError):
         return Response("Could not connect to profile", status.HTTP_502_BAD_GATEWAY)
 
@@ -130,5 +131,5 @@ def send_emergency_push_message(request):
         return Response("Error", status.HTTP_503_SERVICE_UNAVAILABLE)
 
     task = {"title": title, "message": message, "image": image}
-    requests.post('http://192.168.1.4:8002/emergencynotifications/', json=task)
+    requests.post('http://cardefense.eastus.cloudapp.azure.com:8002/emergencynotifications/', json=task)
     return Response(status.HTTP_200_OK)
