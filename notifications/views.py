@@ -42,7 +42,7 @@ class EmergencyNotificationsViewSet(ModelViewSet):
 def send_push_message(request):
 
     plate = request.data['plate']
-    sender_id = request.data["sender_id"]
+    # sender_id = request.data["sender_id"]
     title = request.data["title"]
     message = request.data["message"]
     image = request.data["image"]
@@ -56,11 +56,12 @@ def send_push_message(request):
 
     try:
         task = {"token": token}
-        token_data = requests.post('http://cardefense.eastus.cloudapp.azure.com:8005/get_notification_token/', json=task)
+        token_data = requests.post('http://cardefense.eastus.cloudapp.azure.com:8005/get_notification_token/',
+                                   json=task)
         token = token_data.json()
     except (ConnectionError, HTTPError):
         return Response("Could not to connect to profile", status.HTTP_503_SERVICE_UNAVAILABLE)
-    
+
     try:
         response = PushClient().publish(
             PushMessage(to=token, title=title, body=message))
