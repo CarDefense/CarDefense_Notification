@@ -1,3 +1,3 @@
-docker build -t tayh/api_cars:prod .
+docker build -t tayh/api_notifications:homolog .
 docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
-docker push tayh/api_cars:prod
+docker push tayh/api_notifications:homolog
