@@ -19,3 +19,14 @@ script:
   - docker-compose run web coverage report
   - flake8 .
 
+deploy:
+    - provider: script
+      skip_cleanup: true
+      script: bash ./scripts/deploy_prod.sh
+      on:
+        branch: master
+    - provider: script
+      skip_cleanup: true
+      script: bash ./scripts/deploy_homolog.sh
+      on:
+        branch: devel
