@@ -27,9 +27,9 @@ class NotificationsViewSet(ModelViewSet):
     queryset = Notifications.objects.all()
     serializer_class = NotificationsSerializer
 
-    # def get_queryset(self):
-    #     token = self.request.query_params.get("token")
-    #     return Notifications.objects.filter(token=token)
+    def get_queryset(self):
+        id_token = self.request.query_params.get("token")
+        return Notifications.objects.filter(id_token=id_token)
 
 
 class EmergencyNotificationsViewSet(ModelViewSet):
@@ -50,12 +50,12 @@ def send_push_message(request):
     try:
         task = {"plate": plate}
         token_data = requests.post('http://cardefense2.eastus.cloudapp.azure.com:8003/get_id_token/', json=task)
-        token = token_data.json()
+        id_token = token_data.json()
     except (ConnectionError, HTTPError):
         return Response("Could not to connect to cars", status.HTTP_503_SERVICE_UNAVAILABLE)
 
     try:
-        task = {"token": token}
+        task = {"token": id_token}
         token_data = requests.post('http://cardefense2.eastus.cloudapp.azure.com:8005/get_notification_token/',
                                    json=task)
         token = token_data.json()
@@ -82,7 +82,7 @@ def send_push_message(request):
     except PushResponseError:
         return Response("Recipient not registered", status.HTTP_404_NOT_FOUND)
 
-    task = {"token": token, "title": title, "message": message, "image": image}
+    task = {"token": id_token, "title": title, "message": message, "image": image}
     requests.post('http://cardefense2.eastus.cloudapp.azure.com:8002/notifications/', json=task)
     return Response(status.HTTP_200_OK)
 
