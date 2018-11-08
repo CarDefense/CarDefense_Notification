@@ -27,9 +27,9 @@ class NotificationsViewSet(ModelViewSet):
     queryset = Notifications.objects.all()
     serializer_class = NotificationsSerializer
 
-     def get_queryset(self):
-         id_token = self.request.query_params.get("token")
-         return Notifications.objects.filter(id_token=id_token)
+    def get_queryset(self):
+        id_token = self.request.query_params.get("token")
+        return Notifications.objects.filter(id_token=id_token)
 
 
 class EmergencyNotificationsViewSet(ModelViewSet):
