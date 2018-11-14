@@ -74,7 +74,7 @@ REST_FRAMEWORK = {
 
     'DATE_FORMAT': "%d-%b-%Y",
     'TIME_FORMAT': "%H:%M",
-    
+
 }
 
 
