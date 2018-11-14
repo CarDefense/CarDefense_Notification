@@ -70,6 +70,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'api_notification.wsgi.application'
 
+REST_FRAMEWORK = {
+
+    'DATE_FORMAT': "%d-%b-%Y",
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
