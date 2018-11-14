@@ -72,7 +72,7 @@ WSGI_APPLICATION = 'api_notification.wsgi.application'
 
 REST_FRAMEWORK = {
 
-    'DATE_FORMAT': "%d-%b-%Y",
+    'DATE_FORMAT': "%d de %b de %Y",
     'TIME_FORMAT': "%H:%M",
 
 }
