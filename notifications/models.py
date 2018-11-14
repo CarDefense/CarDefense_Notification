@@ -1,5 +1,4 @@
 from django.db import models
-from api_notification import settings
 
 
 class Notifications(models.Model):
@@ -8,6 +7,7 @@ class Notifications(models.Model):
     message = models.CharField(max_length=50)
     image = models.CharField(null=True, blank=True, max_length=250)
     date = models.DateField(auto_now_add=True)
+    time = models.TimeField(auto_now_add=True)
 
 
 class EmergencyNotifications(models.Model):

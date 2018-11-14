@@ -73,6 +73,8 @@ WSGI_APPLICATION = 'api_notification.wsgi.application'
 REST_FRAMEWORK = {
 
     'DATE_FORMAT': "%d-%b-%Y",
+    'TIME_FORMAT': "%H:%M",
+    
 }
 
 
@@ -114,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 
