@@ -70,6 +70,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'api_notification.wsgi.application'
 
+REST_FRAMEWORK = {
+
+    'DATE_FORMAT': "%d de %b de %Y",
+    'TIME_FORMAT': "%H:%M",
+
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -109,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 

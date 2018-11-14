@@ -22,7 +22,7 @@ from notifications.views import send_push_message, send_emergency_push_message
 from django.conf.urls.static import static
 from django.conf import settings
 
-router = routers.SimpleRouter()
+router = routers.DefaultRouter()
 router.register(r'notifications', NotificationsViewSet)
 router.register(r'emergencynotifications', EmergencyNotificationsViewSet)
 router.register(r'notificationsimage', NotificationsImageViewSet)

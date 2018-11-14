@@ -1,3 +1,7 @@
-# from django.contrib import admin
+from django.contrib import admin
+from .models import Notifications, EmergencyNotifications, NotificationsImage
 
-# Register your models here.
+
+admin.site.register(Notifications)
+admin.site.register(EmergencyNotifications)
+admin.site.register(NotificationsImage)
