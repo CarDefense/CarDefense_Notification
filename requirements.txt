@@ -9,3 +9,4 @@ rollbar
 Pillow
 self
 requests
+psycopg2-binary
