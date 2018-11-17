@@ -13,7 +13,7 @@ from rest_framework.decorators import api_view
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, filters
 import requests
 
 
@@ -28,6 +28,8 @@ class NotificationsImageViewSet(ModelViewSet):
 class NotificationsViewSet(ModelViewSet):
     queryset = Notifications.objects.all()
     serializer_class = NotificationsSerializer
+    filter_backends = (filters.OrderingFilter,)
+    ordering_fields = ('id',)
 
     def get_queryset(self):
         id_token = self.request.query_params.get("token")
@@ -37,6 +39,8 @@ class NotificationsViewSet(ModelViewSet):
 class EmergencyNotificationsViewSet(ModelViewSet):
     queryset = EmergencyNotifications.objects.all()
     serializer_class = EmergencyNotificationsSerializer
+    filter_backends = (filters.OrderingFilter,)
+    ordering_fields = ('id',)
 
 
 @api_view(["POST"])
