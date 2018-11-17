@@ -21,7 +21,7 @@ class NotificationsTests(APITestCase):
 
     def testing_get(client):
         client = APIClient()
-        client.get('http://cardefense2.eastus.cloudapp.azure.com:8002/emergencynotifications/')
+        client.get('http://cardefense3.eastus.cloudapp.azure.com:8002/emergencynotifications/')
 
     def testing_private(client):
         client = APIClient()
@@ -29,7 +29,7 @@ class NotificationsTests(APITestCase):
                     'message': 'new message', 'image': ''},
                     format='json')
 
-    def testing_public(client):
-        client = APIClient()
-        client.post('/send_emergency_push_message/', {'sender_id': '123', 'title': 'new title',
-                    'message': 'new message', 'image': ''}, format='json')
+    # def testing_public(client):
+    #     client = APIClient()
+    #     client.post('/send_emergency_push_message/', {'sender_id': '123', 'title': 'new title',
+    #                 'message': 'new message', 'image': ''}, format='json')
