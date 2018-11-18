@@ -1,6 +1,7 @@
 from exponent_server_sdk import PushClient
 from exponent_server_sdk import PushMessage
 from exponent_server_sdk import PushServerError
+from exponent_server_sdk import PushResponseError
 from exponent_server_sdk import DeviceNotRegisteredError
 from exponent_server_sdk import MessageTooBigError
 from exponent_server_sdk import MessageRateExceededError
@@ -158,5 +159,40 @@ def send_emergency_push_message(request):
         return Response("Error", status.HTTP_503_SERVICE_UNAVAILABLE)
 
     EmergencyNotifications.objects.create(title=title, message=message, image=image)
+
+    return Response(status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+@permission_classes((AllowAny, ))
+def send_push_message_admin(request):
+
+    id = request.data['id']
+    token = request.data['token']
+    title = request.data['title']
+    message = request.data['message']
+    image = request.data['image']
+
+    try:
+        response = PushClient().publish(
+            PushMessage(to=token, title=title, body=message))
+    except PushServerError:
+        return Response("Push Server Error", status.HTTP_502_BAD_GATEWAY)
+    except (ConnectionError, HTTPError):
+        return Response("Could not connect to ExpoSever", status.HTTP_502_BAD_GATEWAY)
+    except (ValueError):
+        return Response("Recipient not registered", status.HTTP_404_NOT_FOUND)
+    try:
+        response.validate_response()
+    except DeviceNotRegisteredError:
+        return Response("Recipient not registered", status.HTTP_404_NOT_FOUND)
+    except MessageTooBigError:
+        return Response("Message too big", status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
+    except MessageRateExceededError:
+        return Response("Error", status.HTTP_503_SERVICE_UNAVAILABLE)
+    except PushResponseError:
+        return Response("Recipient not registered", status.HTTP_404_NOT_FOUND)
+
+    Notifications.objects.create(id_token=id, title=title, message=message, image=image)
 
     return Response(status.HTTP_200_OK)
