@@ -64,7 +64,8 @@ def send_push_message(request):
     try:
         if (idTokenArray.json()):
             task = {"token_array": idTokenArray.json()}
-            notificationTokenArray = requests.post(URL + ':8005/get_notification_token/', json=task)   
+            notificationTokenArray = requests.post(URL + ':8005/get_notification_token/', json=task)
+
         else:
             return Response("Placa não cadastrada.")
     except (ConnectionError, HTTPError):
@@ -106,7 +107,7 @@ def send_push_message(request):
         if(token != sender_id):
             Notifications.objects.create(id_token=token, title=title, message=message, image=image)
 
-    return Response("Notificação enviada.",status.HTTP_200_OK)
+    return Response("Notificação enviada.", status.HTTP_200_OK)
 
 
 @api_view(["POST"])
