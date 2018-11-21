@@ -160,7 +160,7 @@ def send_emergency_push_message(request):
 
     EmergencyNotifications.objects.create(title=title, message=message, image=image)
 
-    return Response("Alerta enviado!",status.HTTP_200_OK)
+    return Response("Alerta enviado!", status.HTTP_200_OK)
 
 
 @api_view(["POST"])
@@ -195,4 +195,4 @@ def send_push_message_admin(request):
 
     Notifications.objects.create(id_token=id, title=title, message=message, image=image)
 
-    return Response("Mensagem enviada!",status.HTTP_200_OK)
+    return Response("Mensagem enviada!", status.HTTP_200_OK)
